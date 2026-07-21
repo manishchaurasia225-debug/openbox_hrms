@@ -119,3 +119,75 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Interactive 3D tilt + depth cards.
+ * The wrapper establishes perspective; the inner element rotates toward the
+ * cursor (--rx/--ry set in JS) and children can float on the Z axis. A cursor-
+ * following sheen (--mx/--my) adds a subtle glossy highlight.
+ * ------------------------------------------------------------------------- */
+.tilt-perspective {
+  perspective: 1100px;
+}
+
+.tilt-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition:
+    transform 0.18s ease-out,
+    box-shadow 0.25s ease-out;
+  will-change: transform;
+}
+
+.tilt-card:hover {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px) scale(1.02);
+  box-shadow:
+    0 24px 48px -16px rgb(15 23 42 / 0.35),
+    0 8px 16px -8px rgb(15 23 42 / 0.25);
+}
+
+:root[data-theme='dark'] .tilt-card:hover,
+.dark .tilt-card:hover {
+  box-shadow:
+    0 24px 48px -14px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+/* Glossy highlight that tracks the cursor. */
+.tilt-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  background: radial-gradient(
+    600px circle at var(--mx) var(--my),
+    rgb(255 255 255 / 0.14),
+    transparent 40%
+  );
+}
+.tilt-card:hover .tilt-sheen {
+  opacity: 1;
+}
+
+/* Children that float above the card surface for a layered, 3D feel. */
+.tilt-layer {
+  transform: translateZ(38px);
+}
+.tilt-layer-sm {
+  transform: translateZ(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transition: none;
+  }
+  .tilt-card:hover {
+    transform: translateY(-2px);
+  }
+}

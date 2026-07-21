@@ -47,18 +47,19 @@ public class UserController {
     }
 
     @Operation(summary = "List users",
-            description = "Returns a paginated list of user accounts. Requires the AUTH:VIEW permission.")
+            description = "Returns a paginated list of user accounts. Administrative — requires AUTH:CREATE or AUTH:ADMIN. "
+                    + "A standard user manages their own account via the /account endpoints, not here.")
     @GetMapping
-    @PreAuthorize("hasAuthority('AUTH:VIEW')")
+    @PreAuthorize("hasAuthority('AUTH:CREATE') or hasAuthority('AUTH:ADMIN')")
     public ApiResponse<PageResponse<UserResponse>> list(@PageableDefault(size = 20) Pageable pageable,
                                                         HttpServletRequest http) {
         return ApiResponse.success(userService.listUsers(pageable), "OK", http.getRequestURI());
     }
 
     @Operation(summary = "Get a user",
-            description = "Returns a single user account by its identifier. Requires the AUTH:VIEW permission.")
+            description = "Returns a single user account by its identifier. Administrative — requires AUTH:CREATE or AUTH:ADMIN.")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('AUTH:VIEW')")
+    @PreAuthorize("hasAuthority('AUTH:CREATE') or hasAuthority('AUTH:ADMIN')")
     public ApiResponse<UserResponse> get(@PathVariable Long id, HttpServletRequest http) {
         return ApiResponse.success(userService.getUser(id), "OK", http.getRequestURI());
     }
@@ -74,9 +75,10 @@ public class UserController {
     }
 
     @Operation(summary = "Enable or disable a user",
-            description = "Toggles a user account's enabled status via the 'enabled' query parameter. Requires the AUTH:EDIT permission.")
+            description = "Toggles a user account's enabled status via the 'enabled' query parameter. "
+                    + "Administrative — requires AUTH:CREATE or AUTH:ADMIN.")
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('AUTH:EDIT')")
+    @PreAuthorize("hasAuthority('AUTH:CREATE') or hasAuthority('AUTH:ADMIN')")
     public ApiResponse<UserResponse> setStatus(@PathVariable Long id, @RequestParam boolean enabled,
                                                HttpServletRequest http) {
         return ApiResponse.success(userService.setEnabled(id, enabled),

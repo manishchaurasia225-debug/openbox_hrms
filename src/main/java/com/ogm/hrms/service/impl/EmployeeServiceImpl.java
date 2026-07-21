@@ -19,12 +19,15 @@ import com.ogm.hrms.repository.DesignationRepository;
 import com.ogm.hrms.repository.EmployeeRepository;
 import com.ogm.hrms.repository.EmploymentTypeRepository;
 import com.ogm.hrms.repository.UserRepository;
+import com.ogm.hrms.security.CurrentAccess;
 import com.ogm.hrms.service.EmployeeService;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Default {@link EmployeeService}. Enforces unique employee code, resolves and validates the
@@ -40,17 +43,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmploymentTypeRepository employmentTypeRepository;
     private final UserRepository userRepository;
     private final EmployeeMapper employeeMapper;
+    private final CurrentAccess currentAccess;
+
+    /**
+     * Authorities that grant company-wide (all-employees) scope. A caller holding any of these is an
+     * HR/Admin/Finance/Manager operator; a caller with only {@code EMPLOYEE:VIEW}/{@code EMPLOYEE:EDIT}
+     * is scoped to their own record ("self", per permissions-matrix.md).
+     */
+    private static final String[] EMPLOYEE_ALL_SCOPE = {
+            "EMPLOYEE:CREATE", "EMPLOYEE:DELETE", "EMPLOYEE:EXPORT", "EMPLOYEE:APPROVE", "EMPLOYEE:ADMIN"
+    };
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository,
                                DesignationRepository designationRepository,
                                EmploymentTypeRepository employmentTypeRepository, UserRepository userRepository,
-                               EmployeeMapper employeeMapper) {
+                               EmployeeMapper employeeMapper, CurrentAccess currentAccess) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
         this.designationRepository = designationRepository;
         this.employmentTypeRepository = employmentTypeRepository;
         this.userRepository = userRepository;
         this.employeeMapper = employeeMapper;
+        this.currentAccess = currentAccess;
+    }
+
+    /** @return true when the caller may see/edit any employee; false when scoped to their own record. */
+    private boolean hasAllEmployeeScope() {
+        return currentAccess.hasAnyAuthority(EMPLOYEE_ALL_SCOPE);
     }
 
     @Override
@@ -67,31 +86,71 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<EmployeeResponse> list(Pageable pageable) {
-        return PageResponse.of(employeeRepository.findByDeletedFalse(pageable), employeeMapper::toResponse);
+        if (hasAllEmployeeScope()) {
+            return PageResponse.of(employeeRepository.findByDeletedFalse(pageable), employeeMapper::toResponse);
+        }
+        // Self scope: the directory contains only the caller's own record.
+        return ownRecordPage(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<EmployeeResponse> search(String query, Pageable pageable) {
-        String q = query != null ? query.trim() : "";
-        return PageResponse.of(employeeRepository.search(q, pageable), employeeMapper::toResponse);
+        if (hasAllEmployeeScope()) {
+            String q = query != null ? query.trim() : "";
+            return PageResponse.of(employeeRepository.search(q, pageable), employeeMapper::toResponse);
+        }
+        // Self scope: search is meaningless across a single record — return the caller's own.
+        return ownRecordPage(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EmployeeResponse get(Long id) {
-        return employeeMapper.toResponse(load(id));
+        Employee employee = load(id);
+        assertReadable(employee.getId());
+        return employeeMapper.toResponse(employee);
     }
 
     @Override
     @Transactional
     public EmployeeResponse update(Long id, EmployeeRequest request) {
         Employee employee = load(id);
+        if (!hasAllEmployeeScope()) {
+            // Self scope: a caller may only edit their OWN record, and only its personal fields —
+            // never employment terms, salary, employee code, or the user link (privilege escalation).
+            assertOwn(employee.getId(), "You can only edit your own profile");
+            applySelfEditable(employee, request);
+            return employeeMapper.toResponse(employee);
+        }
         if (employeeRepository.existsByEmployeeCodeIgnoreCaseAndIdNot(request.employeeCode().trim(), id)) {
             throw ApiException.conflict("An employee with this code already exists");
         }
         apply(employee, request, id);
         return employeeMapper.toResponse(employee);
+    }
+
+    /** The caller's own employee record as a single-element (or empty) page, for self-scoped listing. */
+    private PageResponse<EmployeeResponse> ownRecordPage(Pageable pageable) {
+        Long ownId = currentAccess.employeeId();
+        List<Employee> own = ownId == null
+                ? List.of()
+                : employeeRepository.findByIdAndDeletedFalse(ownId).map(List::of).orElse(List.of());
+        return PageResponse.of(new PageImpl<>(own, pageable, own.size()), employeeMapper::toResponse);
+    }
+
+    /** Deny reads of another employee's record when the caller is self-scoped. */
+    private void assertReadable(Long targetEmployeeId) {
+        if (!hasAllEmployeeScope()) {
+            assertOwn(targetEmployeeId, "You can only view your own profile");
+        }
+    }
+
+    private void assertOwn(Long targetEmployeeId, String message) {
+        Long ownId = currentAccess.employeeId();
+        if (ownId == null || !ownId.equals(targetEmployeeId)) {
+            throw ApiException.forbidden(message);
+        }
     }
 
     @Override
@@ -125,6 +184,24 @@ public class EmployeeServiceImpl implements EmployeeService {
         applyGovernmentIds(e, r.governmentIds());
         applySocial(e, r.social());
         applyUser(e, r.userId(), existingId);
+    }
+
+    /**
+     * Apply only the fields an employee may change on their OWN profile: personal bio, contact,
+     * bank/KYC, and social links. Employment terms, salary, employee code, full name, and the user
+     * link are HR-controlled and deliberately ignored here so self-edits cannot escalate privilege.
+     */
+    private void applySelfEditable(Employee e, EmployeeRequest r) {
+        e.setGender(r.gender());
+        e.setDateOfBirth(r.dateOfBirth());
+        e.setBloodGroup(r.bloodGroup());
+        e.setNationality(r.nationality());
+        e.setMaritalStatus(r.maritalStatus());
+        e.setPhotoUrl(r.photoUrl());
+        applyContact(e, r.contact());
+        applyBank(e, r.bank());
+        applyGovernmentIds(e, r.governmentIds());
+        applySocial(e, r.social());
     }
 
     private void applyContact(Employee e, EmployeeRequest.Contact c) {

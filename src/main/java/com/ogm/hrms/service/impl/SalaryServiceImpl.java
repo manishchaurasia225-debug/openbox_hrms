@@ -14,6 +14,7 @@ import com.ogm.hrms.enums.NotificationChannel;
 import com.ogm.hrms.enums.PayslipStatus;
 import com.ogm.hrms.exception.ApiException;
 import com.ogm.hrms.exception.ResourceNotFoundException;
+import com.ogm.hrms.security.CurrentAccess;
 import com.ogm.hrms.repository.CompanyProfileRepository;
 import com.ogm.hrms.repository.EmployeeRepository;
 import com.ogm.hrms.repository.PayslipRepository;
@@ -49,11 +50,22 @@ public class SalaryServiceImpl implements SalaryService {
     private final NotificationService notificationService;
     private final CompanyProfileRepository companyProfileRepository;
 
+    private final CurrentAccess currentAccess;
+
+    /**
+     * Authorities that grant company-wide payroll scope (view anyone's salary/payslips). A caller
+     * with only {@code PAYROLL:VIEW}/{@code PAYROLL:EXPORT} (a standard employee) is scoped to their
+     * own payroll, per permissions-matrix.md.
+     */
+    private static final String[] PAYROLL_ALL_SCOPE = {
+            "PAYROLL:CREATE", "PAYROLL:EDIT", "PAYROLL:APPROVE", "PAYROLL:ADMIN"
+    };
+
     public SalaryServiceImpl(EmployeeRepository employeeRepository,
                              SalaryStructureRepository salaryStructureRepository, PayslipRepository payslipRepository,
                              StorageService storageService, PayslipPdfGenerator payslipPdfGenerator,
                              EmailService emailService, NotificationService notificationService,
-                             CompanyProfileRepository companyProfileRepository) {
+                             CompanyProfileRepository companyProfileRepository, CurrentAccess currentAccess) {
         this.employeeRepository = employeeRepository;
         this.salaryStructureRepository = salaryStructureRepository;
         this.payslipRepository = payslipRepository;
@@ -62,6 +74,18 @@ public class SalaryServiceImpl implements SalaryService {
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.companyProfileRepository = companyProfileRepository;
+        this.currentAccess = currentAccess;
+    }
+
+    /** Deny access to another employee's payroll when the caller is scoped to their own. */
+    private void assertPayrollAccess(Long employeeId) {
+        if (currentAccess.hasAnyAuthority(PAYROLL_ALL_SCOPE)) {
+            return;
+        }
+        Long ownId = currentAccess.employeeId();
+        if (ownId == null || !ownId.equals(employeeId)) {
+            throw ApiException.forbidden("You can only access your own payroll");
+        }
     }
 
     @Override
@@ -99,6 +123,7 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     @Transactional(readOnly = true)
     public List<SalaryStructureResponse> history(Long employeeId) {
+        assertPayrollAccess(employeeId);
         return salaryStructureRepository.findByEmployee_IdAndDeletedFalseOrderByEffectiveFromDesc(employeeId)
                 .stream().map(this::toStructure).toList();
     }
@@ -106,6 +131,7 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     @Transactional(readOnly = true)
     public SalaryStructureResponse current(Long employeeId) {
+        assertPayrollAccess(employeeId);
         return salaryStructureRepository
                 .findTopByEmployee_IdAndEffectiveFromLessThanEqualAndDeletedFalseOrderByEffectiveFromDesc(
                         employeeId, LocalDate.now())
@@ -155,6 +181,7 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PayslipResponse> listPayslips(Long employeeId, Pageable pageable) {
+        assertPayrollAccess(employeeId);
         return PageResponse.of(
                 payslipRepository.findByEmployee_IdAndDeletedFalseOrderByPeriodYearDescPeriodMonthDesc(employeeId, pageable),
                 this::toPayslip);
@@ -163,13 +190,16 @@ public class SalaryServiceImpl implements SalaryService {
     @Override
     @Transactional(readOnly = true)
     public PayslipResponse getPayslip(Long id) {
-        return toPayslip(loadPayslip(id));
+        Payslip payslip = loadPayslip(id);
+        assertPayrollAccess(payslip.getEmployee().getId());
+        return toPayslip(payslip);
     }
 
     @Override
     @Transactional(readOnly = true)
     public DocumentDownload downloadPayslip(Long id) {
         Payslip payslip = loadPayslip(id);
+        assertPayrollAccess(payslip.getEmployee().getId());
         if (payslip.getStorageKey() == null) {
             throw new ResourceNotFoundException("Payslip PDF", "id", id);
         }

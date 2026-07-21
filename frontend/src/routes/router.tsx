@@ -17,6 +17,7 @@ import { DesignationsPage } from '@/pages/masters/designations-page'
 import { EmploymentTypesPage } from '@/pages/masters/employment-types-page'
 import { LeavePage } from '@/pages/leave/leave-page'
 import { AttendancePage } from '@/pages/attendance/attendance-page'
+import { DocumentsPage } from '@/pages/documents/documents-page'
 import { ReimbursementsPage } from '@/pages/reimbursements/reimbursements-page'
 
 /**
@@ -30,7 +31,6 @@ interface FeatureRoute {
 }
 
 const featureRoutes: FeatureRoute[] = [
-  { path: 'documents', title: 'Documents', anyOf: ['DOCUMENT:VIEW'] },
   { path: 'payroll', title: 'Payroll', anyOf: ['PAYROLL:VIEW'] },
   { path: 'holidays', title: 'Holidays', anyOf: ['HOLIDAY:VIEW'] },
   { path: 'announcements', title: 'Announcements', anyOf: ['ANNOUNCEMENT:VIEW'] },
@@ -106,6 +106,11 @@ export const router = createBrowserRouter([
             path: 'leave',
             element: <RequirePermission anyOf={['LEAVE:VIEW']} />,
             children: [{ index: true, element: <LeavePage /> }],
+          },
+          {
+            path: 'documents',
+            element: <RequirePermission anyOf={['DOCUMENT:VIEW']} />,
+            children: [{ index: true, element: <DocumentsPage /> }],
           },
           {
             path: 'reimbursements',
