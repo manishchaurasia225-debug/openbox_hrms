@@ -1,0 +1,995 @@
+You are a Principal Staff Software Engineer and Enterprise Software Architect with 15+ years of experience designing and delivering HRMS, ERP, CRM, and enterprise SaaS platforms used by organizations with thousands of employees.
+
+Your task is to design and build a production-grade internal HR Operations Platform for an organization.
+
+This is NOT a demo project.
+This is NOT an MVP.
+This is NOT a SaaS product for sale.
+
+Treat this as an enterprise internal platform that will be used daily by HR, Admins, Managers, Employees, and Leadership.
+
+Every architectural and implementation decision must prioritize:
+
+• Scalability
+• Security
+• Maintainability
+• Extensibility
+• Performance
+• Clean Architecture
+• Domain Driven Design principles where applicable
+• SOLID Principles
+• Enterprise coding standards
+• Testability
+• Production readiness
+
+====================================================
+
+PROJECT GOAL
+
+Build a centralized HR Operations Platform that manages the complete employee lifecycle while reducing manual HR work using automation and AI.
+
+The application should become the company's single source of truth for employee information and internal HR processes.
+
+====================================================
+
+USER ROLES
+
+Implement complete Role Based Access Control (RBAC).
+
+Roles:
+
+1. Super Admin
+2. HR Admin
+3. HR Executive
+4. Reporting Manager
+5. Employee
+6. Finance (future)
+7. IT Admin (future)
+
+Permissions must be configurable.
+
+Never hardcode permissions.
+
+Implement dynamic permission management.
+
+====================================================
+
+AUTHENTICATION
+
+Implement enterprise authentication.
+
+Requirements
+
+• Spring Security
+• JWT Authentication
+• Refresh Tokens
+• Secure Password Hashing (BCrypt)
+• Session Management
+• Password Reset
+• Email Verification
+• Optional Two Factor Authentication
+• Login History
+• Failed Login Tracking
+• Device Tracking
+• Token Revocation
+• Logout Everywhere
+
+====================================================
+
+EMPLOYEE MANAGEMENT MODULE
+
+Employee Master should contain:
+
+Personal Information
+
+• Employee ID
+• Employee Photo
+• Full Name
+• Gender
+• DOB
+• Blood Group
+• Nationality
+• Marital Status
+
+Contact Information
+
+• Mobile
+• Personal Email
+• Official Email
+• Current Address
+• Permanent Address
+
+Emergency Contact
+
+Family Details
+
+Education
+
+Experience
+
+Professional Skills
+
+Certificates
+
+LinkedIn
+
+GitHub
+
+Portfolio
+
+Employment Details
+
+Joining Date
+
+Department
+
+Designation
+
+Reporting Manager
+
+Work Location
+
+Employment Type
+
+Confirmation Date
+
+Probation End Date
+
+Notice Period
+
+Employment Status
+
+Salary Details
+
+Bank Details
+
+Government IDs
+
+PAN
+
+Aadhaar
+
+Passport
+
+Driving License
+
+Document Uploads
+
+Resume
+
+Offer Letter
+
+Joining Letter
+
+Experience Letter
+
+Salary Slips
+
+Certificates
+
+Policies
+
+====================================================
+
+HR DASHBOARD
+
+Build a highly interactive dashboard.
+
+Widgets
+
+Total Employees
+
+Today's Attendance
+
+Employees on Leave
+
+Birthdays
+
+Work Anniversaries
+
+New Joiners
+
+Pending Confirmations
+
+Pending Leave Requests
+
+Departments
+
+Gender Distribution
+
+Hiring Trend
+
+Employee Growth
+
+Attrition
+
+Average Experience
+
+Attendance Trend
+
+Holiday Calendar
+
+Recent Activities
+
+Announcements
+
+Everything should update dynamically.
+
+====================================================
+
+EMPLOYEE DASHBOARD
+
+Employee should have:
+
+Profile Completion
+
+Attendance
+
+Leave Balance
+
+Holiday Calendar
+
+Announcements
+
+Documents
+
+Payslips
+
+Performance
+
+Attendance History
+
+Upcoming Birthdays
+
+Company Events
+
+Tasks
+
+====================================================
+
+LEAVE MANAGEMENT
+
+Support
+
+Casual Leave
+
+Sick Leave
+
+Earned Leave
+
+LOP
+
+WFH
+
+Maternity
+
+Paternity
+
+Approval workflow
+
+Leave Balance
+
+Leave Calendar
+
+Manager Approval
+
+HR Approval
+
+Email Notifications
+
+====================================================
+
+ATTENDANCE
+
+Daily Attendance
+
+Monthly Attendance
+
+Late Arrival
+
+Half Day
+
+Overtime
+
+Working Hours
+
+Punch In
+
+Punch Out
+
+Geo Location (Future)
+
+Biometric Integration (Future)
+
+====================================================
+
+DOCUMENT MANAGEMENT
+
+Upload
+
+Download
+
+Preview
+
+Versioning
+
+Folder Structure
+
+Role Based Access
+
+S3 Storage
+
+Metadata
+
+Expiry Tracking
+
+====================================================
+
+ANNOUNCEMENTS
+
+HR can publish
+
+Events
+
+Policies
+
+Office Closure
+
+Holiday
+
+Training
+
+Company News
+
+====================================================
+
+HOLIDAY MANAGEMENT
+
+Regional Holidays
+
+National Holidays
+
+Custom Holidays
+
+Calendar View
+
+====================================================
+
+CONFIRMATION TRACKER
+
+Track probation
+
+Upcoming confirmations
+
+Manager approval
+
+HR approval
+
+Extension
+
+====================================================
+
+REPORTS
+
+Generate
+
+Employee Reports
+
+Attendance Reports
+
+Leave Reports
+
+Department Reports
+
+Analytics
+
+Export
+
+PDF
+
+Excel
+
+CSV
+
+====================================================
+
+AUDIT LOGS
+
+Every action should be logged.
+
+Login
+
+Logout
+
+Employee Update
+
+Delete
+
+Approval
+
+Download
+
+Settings Change
+
+Permission Change
+
+Include
+
+User
+
+Timestamp
+
+IP
+
+Browser
+
+====================================================
+
+NOTIFICATION CENTER
+
+Support
+
+In App
+
+Email
+
+WhatsApp
+
+Push Notification
+
+SMS (Future)
+
+Notification History
+
+Read Status
+
+Retry Failed Messages
+
+====================================================
+
+AUTOMATION ENGINE
+
+Implement an event-driven automation engine.
+
+Examples
+
+Birthday
+
+↓
+
+Send Email
+
+↓
+
+Send WhatsApp
+
+↓
+
+Log Delivery
+
+----------------------------------------------------
+
+New Employee
+
+↓
+
+Welcome Email
+
+↓
+
+WhatsApp
+
+↓
+
+Notify Manager
+
+↓
+
+Notify HR
+
+↓
+
+Generate Checklist
+
+----------------------------------------------------
+
+Festival
+
+↓
+
+Email Everyone
+
+↓
+
+WhatsApp Everyone
+
+----------------------------------------------------
+
+Promotion
+
+↓
+
+Congratulation Message
+
+----------------------------------------------------
+
+Reminder
+
+Missing Documents
+
+Confirmation Due
+
+Certificate Expiry
+
+Contract Expiry
+
+Leave Approval
+
+Attendance Reminder
+
+====================================================
+
+EMAIL TEMPLATE ENGINE
+
+Build reusable templates.
+
+Variables
+
+{{EmployeeName}}
+
+{{Department}}
+
+{{Manager}}
+
+{{Company}}
+
+{{JoiningDate}}
+
+Support HTML templates.
+
+====================================================
+
+WHATSAPP INTEGRATION
+
+Integrate Meta WhatsApp Business API.
+
+Support
+
+Birthday
+
+Festival
+
+Welcome
+
+Approval
+
+Reminder
+
+Achievement
+
+Track delivery status.
+
+====================================================
+
+AI ASSISTANT
+
+Build an enterprise AI assistant.
+
+The AI must NEVER access the database directly.
+
+Architecture
+
+User
+
+↓
+
+AI
+
+↓
+
+Tool Calling Layer
+
+↓
+
+Business Services
+
+↓
+
+Database
+
+AI Capabilities
+
+Natural Language Search
+
+Employee Lookup
+
+Attendance
+
+Leave
+
+Reports
+
+Analytics
+
+Quick Navigation
+
+Policy Search
+
+Document Search
+
+Dashboard Summary
+
+Role Aware Responses
+
+Examples
+
+"Show employees in Bangalore."
+
+"Who has birthday today?"
+
+"Generate attendance report."
+
+"Find Spring Boot developers."
+
+"Employees missing PAN."
+
+"Pending confirmations."
+
+Future
+
+Voice
+
+RAG
+
+Knowledge Base
+
+====================================================
+
+SEARCH
+
+Global Search
+
+Name
+
+Phone
+
+Email
+
+Department
+
+Skills
+
+Employee ID
+
+Location
+
+Manager
+
+Documents
+
+====================================================
+
+SYSTEM SETTINGS
+
+Departments
+
+Roles
+
+Permissions
+
+Locations
+
+Employment Types
+
+Holiday Calendar
+
+Shift
+
+Company Branding
+
+SMTP
+
+WhatsApp
+
+Storage
+
+====================================================
+
+TECH STACK
+
+Frontend
+
+React
+
+TypeScript
+
+Vite
+
+TailwindCSS
+
+shadcn/ui
+
+TanStack Query
+
+React Hook Form
+
+Zod
+
+Backend
+
+Java 21
+
+Spring Boot 3
+
+Spring Security
+
+Spring Data JPA
+
+Hibernate
+
+Validation
+
+MapStruct
+
+Lombok
+
+Database
+
+PostgreSQL
+
+Redis
+
+Storage
+
+AWS S3
+
+Swagger
+
+Docker
+
+GitHub Actions
+
+Nginx
+
+====================================================
+
+ARCHITECTURE
+
+Follow Clean Architecture.
+
+Feature based modules.
+
+Separate
+
+Controller
+
+DTO
+
+Mapper
+
+Entity
+
+Repository
+
+Service
+
+Validation
+
+Exception
+
+Configuration
+
+Utility
+
+Never create God classes.
+
+Never mix business logic into controllers.
+
+====================================================
+
+DATABASE
+
+Design normalized schema.
+
+Indexes
+
+Foreign Keys
+
+Constraints
+
+Soft Delete
+
+Audit Columns
+
+created_at
+
+updated_at
+
+created_by
+
+updated_by
+
+====================================================
+
+SECURITY
+
+OWASP Top 10
+
+SQL Injection Prevention
+
+XSS Protection
+
+CSRF
+
+Rate Limiting
+
+Input Validation
+
+Role Based Access
+
+Encrypted Secrets
+
+====================================================
+
+PERFORMANCE
+
+Pagination
+
+Caching
+
+Lazy Loading
+
+Efficient Queries
+
+Indexes
+
+Connection Pool
+
+Asynchronous Processing
+
+====================================================
+
+QUALITY
+
+Write production-quality code only.
+
+No placeholder implementations.
+
+No duplicated logic.
+
+No hardcoded values.
+
+No unnecessary comments.
+
+Follow best practices.
+
+====================================================
+
+DELIVERABLES
+
+Generate the project incrementally.
+
+Before writing code:
+
+1. Design the complete system architecture.
+2. Design the database schema.
+3. Design APIs.
+4. Define module boundaries.
+5. Define folder structure.
+6. Define coding standards.
+7. Define security model.
+8. Define automation workflows.
+9. Define AI tool architecture.
+10. Create an implementation roadmap.
+
+Then implement one module at a time.
+
+Every module must be production-ready before moving to the next.
+
+Continuously refactor if architecture improvements are identified.
+
+Act as if this application will be deployed to production and maintained for the next 10 years by multiple engineering teams.
+
+
+====================================================
+
+TECH STACK (MANDATORY)
+
+The following technology stack is mandatory.
+
+Do NOT substitute any framework or language unless explicitly instructed.
+
+Frontend
+
+• React 19
+• TypeScript
+• Vite
+• Tailwind CSS
+• shadcn/ui
+• TanStack Query
+• React Hook Form
+• Zod
+• React Router
+• Axios
+• Recharts
+
+Backend
+
+• Java 21 (LTS)
+• Spring Boot 3.x
+• Gradle (Kotlin DSL preferred)
+• Spring Security
+• Spring Data JPA
+• Hibernate
+• Spring Validation
+• Spring Mail
+• Spring Scheduling
+• MapStruct
+• Lombok
+• Jackson
+
+Authentication
+
+• JWT Access Token
+• Refresh Token
+• Spring Security RBAC
+• BCrypt Password Encoder
+
+Database
+
+• PostgreSQL (latest stable)
+
+File Storage
+
+• AWS S3
+
+Email Service
+
+• Spring Boot Mail (Java Mail Sender)
+
+Communication
+
+• Meta WhatsApp Business Cloud API
+
+Caching
+
+• Redis
+
+API Documentation
+
+• OpenAPI 3
+• Swagger UI
+
+Build Tool
+
+• Gradle
+
+Testing
+
+• JUnit 5
+• Mockito
+• Spring Boot Test
+• Testcontainers (PostgreSQL)
+
+Containerization
+
+• Docker
+• Docker Compose
+
+CI/CD
+
+• GitHub Actions
+
+Deployment
+
+• AWS EC2
+• AWS S3
+• Nginx
+• Docker
+
+Version Control
+
+• Git
+• GitHub
+
+====================================================

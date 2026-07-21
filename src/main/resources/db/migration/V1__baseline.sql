@@ -1,0 +1,4 @@
+-- V1 baseline.
+-- From this point the database schema is owned and versioned by Flyway (dev/prod).
+-- Hibernate runs in validate mode and must not mutate the schema.
+-- Feature tables are introduced by later migrations (V2+), e.g. auth: users, roles, permissions.

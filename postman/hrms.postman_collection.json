@@ -1,0 +1,5972 @@
+{
+  "info": {
+    "name": "OGM HRMS API",
+    "_postman_id": "b7f3c2a1-0000-4000-a000-hrms00000001",
+    "description": "Postman collection for the OGM HRMS API, generated from the live OpenAPI document.\n\nUSAGE:\n1. Select the 'HRMS - Local (dev)' environment (sets baseUrl + admin credentials).\n2. Run 'Authentication > Login' once. Its test script saves the JWT into the {{token}} variable in the active scope.\n3. Every other request inherits Bearer {{token}} automatically.\n\nDo NOT manually define a 'token'/'accessToken' variable \u2014 Login populates {{token}} for you. Access tokens expire after 15 minutes; re-run Login if requests start returning 401.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@example.com",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "change-me",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "AI Assistant",
+      "description": "Natural-language HR assistant that executes permission-checked tool calls.",
+      "item": [
+        {
+          "name": "Ask the AI assistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ai/assistant",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ai",
+                "assistant"
+              ]
+            },
+            "description": "Submits a natural-language query; the assistant answers using tools bounded by the caller's permissions. Requires AI:VIEW.\n\n`POST /api/v1/ai/assistant`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List available AI tools",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ai/tools",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ai",
+                "tools"
+              ]
+            },
+            "description": "Returns the descriptors of tools the assistant can invoke. Requires AI:VIEW.\n\n`GET /api/v1/ai/tools`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Account Self-Service",
+      "description": "Public password-reset and email-verification workflows.",
+      "item": [
+        {
+          "name": "Request password reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password-reset/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password-reset",
+                "request"
+              ]
+            },
+            "description": "Sends a password-reset email if the address matches an account. Always responds success to avoid user enumeration. Public endpoint.\n\n`POST /api/v1/auth/password-reset/request`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm password reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password-reset/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password-reset",
+                "confirm"
+              ]
+            },
+            "description": "Validates and consumes the reset token, then sets the new password. Public endpoint.\n\n`POST /api/v1/auth/password-reset/confirm`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"string\",\n  \"newPassword\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resend email verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/email/verify/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "email",
+                "verify",
+                "request"
+              ]
+            },
+            "description": "Sends a verification email if the account exists and is unverified. Always responds success to avoid user enumeration. Public endpoint.\n\n`POST /api/v1/auth/email/verify/request`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm email verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/email/verify/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "email",
+                "verify",
+                "confirm"
+              ]
+            },
+            "description": "Validates and consumes the verification token, marking the account's email as verified. Public endpoint.\n\n`POST /api/v1/auth/email/verify/confirm`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "description": "Create, publish, and browse company-wide announcements.",
+      "item": [
+        {
+          "name": "Get announcement by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single announcement by its identifier. Requires ANNOUNCEMENT:VIEW.\n\n`GET /api/v1/announcements/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update announcement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing announcement's content. Requires ANNOUNCEMENT:EDIT.\n\n`PUT /api/v1/announcements/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"string\",\n  \"body\": \"string\",\n  \"category\": \"NEWS\",\n  \"targetDepartmentId\": 1,\n  \"publishAt\": \"2026-01-01T09:00:00Z\",\n  \"expiresAt\": \"2026-01-01T09:00:00Z\",\n  \"pinned\": true,\n  \"publishNow\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete announcement",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Soft-deletes an announcement. Requires ANNOUNCEMENT:DELETE.\n\n`DELETE /api/v1/announcements/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List announcements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of all announcements. Requires ANNOUNCEMENT:VIEW.\n\n`GET /api/v1/announcements`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create announcement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements"
+              ]
+            },
+            "description": "Creates a draft announcement. Requires ANNOUNCEMENT:CREATE.\n\n`POST /api/v1/announcements`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"string\",\n  \"body\": \"string\",\n  \"category\": \"NEWS\",\n  \"targetDepartmentId\": 1,\n  \"publishAt\": \"2026-01-01T09:00:00Z\",\n  \"expiresAt\": \"2026-01-01T09:00:00Z\",\n  \"pinned\": true,\n  \"publishNow\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish announcement",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements/:id/publish",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements",
+                ":id",
+                "publish"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Publishes an announcement so it becomes visible in the feed. Requires ANNOUNCEMENT:APPROVE.\n\n`POST /api/v1/announcements/{id}/publish`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get announcement feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/announcements/feed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "announcements",
+                "feed"
+              ]
+            },
+            "description": "Returns the current published announcement feed for the caller. Requires ANNOUNCEMENT:VIEW.\n\n`GET /api/v1/announcements/feed`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "description": "Wi-Fi/IP-based attendance: self-service check-in/out, history, corrections, approvals, and monthly summaries.",
+      "item": [
+        {
+          "name": "Reject attendance record",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/:id/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                ":id",
+                "reject"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Rejects a pending attendance record or correction. Requires ATTENDANCE:APPROVE.\n\n`POST /api/v1/attendance/{id}/reject`"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve attendance record",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/:id/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                ":id",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Approves a pending attendance record or correction. Requires ATTENDANCE:APPROVE.\n\n`POST /api/v1/attendance/{id}/approve`"
+          },
+          "response": []
+        },
+        {
+          "name": "Correct an attendance record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/corrections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "corrections"
+              ]
+            },
+            "description": "Applies a manual correction to an attendance record. Requires ATTENDANCE:EDIT.\n\n`POST /api/v1/attendance/corrections`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"date\": \"2026-01-01\",\n  \"attendanceType\": \"OFFICE\",\n  \"clockIn\": \"2026-01-01T09:00:00Z\",\n  \"clockOut\": \"2026-01-01T09:00:00Z\",\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check out",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/check-out",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "check-out"
+              ]
+            },
+            "description": "Records the authenticated employee's check-out for the current attendance record. Requires ATTENDANCE:CREATE.\n\n`POST /api/v1/attendance/check-out`"
+          },
+          "response": []
+        },
+        {
+          "name": "Check in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/check-in",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "check-in"
+              ]
+            },
+            "description": "Records the authenticated employee's check-in, capturing client IP and User-Agent. Requires ATTENDANCE:CREATE.\n\n`POST /api/v1/attendance/check-in`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mode\": \"OFFICE\",\n  \"wfhReason\": \"string\",\n  \"workLocation\": \"string\",\n  \"expectedHours\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List attendance records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance?employeeId=&date=&from=&to=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "date",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns paginated attendance records filtered by employee, a single date, or a date range. Requires ATTENDANCE:VIEW.\n\n`GET /api/v1/attendance`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get monthly attendance summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/summary?employeeId=&year=&month=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "year",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "month",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns an attendance summary for an employee for the given year and month. Requires ATTENDANCE:VIEW.\n\n`GET /api/v1/attendance/summary`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get my attendance history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attendance/me?from=&to=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated attendance history for the authenticated employee, optionally filtered by a date range. Requires ATTENDANCE:VIEW.\n\n`GET /api/v1/attendance/me`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "description": "Read-only, append-only audit trail of system and user actions.",
+      "item": [
+        {
+          "name": "Search audit logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/audit-logs?action=&outcome=&module=&actorEmail=&from=&to=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit-logs"
+              ],
+              "query": [
+                {
+                  "key": "action",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "outcome",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "module",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "actorEmail",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated audit trail filterable by action, outcome, module, actor email, and time range. Requires the AUDIT:VIEW permission.\n\n`GET /api/v1/audit-logs`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get an audit log entry",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/audit-logs/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit-logs",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single audit log entry by its identifier. Requires the AUDIT:VIEW permission.\n\n`GET /api/v1/audit-logs/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "description": "Login, token refresh, logout, and current-user identity endpoints.",
+      "item": [
+        {
+          "name": "Refresh access token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Exchanges a valid refresh token for a new access/refresh token pair. Public endpoint.\n\n`POST /api/v1/auth/refresh`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Log out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Revokes the supplied refresh token so it can no longer be used. Public endpoint.\n\n`POST /api/v1/auth/logout`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate and issue tokens",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Validates credentials and returns access and refresh tokens. Public endpoint; records client IP and user agent.\n\n`POST /api/v1/auth/login`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const d = pm.response.json().data;",
+                  "  const scope = pm.environment.name ? pm.environment : pm.collectionVariables;",
+                  "  scope.set('token', d.accessToken);",
+                  "  scope.set('refreshToken', d.refreshToken);",
+                  "  console.log('Saved token to ' + (pm.environment.name ? 'environment' : 'collection') + ' scope');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Returns the profile, roles, and permissions of the authenticated caller. Requires a valid access token.\n\n`GET /api/v1/auth/me`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Automation Engine",
+      "description": "Configure scheduled automation rules and inspect or trigger their runs.",
+      "item": [
+        {
+          "name": "Run automation now",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/automations/:type/run",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "automations",
+                ":type",
+                "run"
+              ],
+              "variable": [
+                {
+                  "key": "type",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Manually triggers an immediate run of the given automation type. Requires NOTIFICATION:ADMIN.\n\n`POST /api/v1/automations/{type}/run`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get automation rule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/automations/:type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "automations",
+                ":type"
+              ],
+              "variable": [
+                {
+                  "key": "type",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns the automation rule for the given automation type. Requires NOTIFICATION:VIEW.\n\n`GET /api/v1/automations/{type}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update automation rule",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/automations/:type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "automations",
+                ":type"
+              ],
+              "variable": [
+                {
+                  "key": "type",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates configuration (schedule, enablement) for an automation rule. Requires NOTIFICATION:ADMIN.\n\n`PATCH /api/v1/automations/{type}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true,\n  \"channels\": [\n    \"IN_APP\"\n  ],\n  \"titleTemplate\": \"string\",\n  \"messageTemplate\": \"string\",\n  \"leadDays\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List automation rules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/automations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "automations"
+              ]
+            },
+            "description": "Returns all configured automation rules. Requires NOTIFICATION:VIEW.\n\n`GET /api/v1/automations`"
+          },
+          "response": []
+        },
+        {
+          "name": "List automation runs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/automations/runs?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "automations",
+                "runs"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated history of automation rule executions. Requires NOTIFICATION:VIEW.\n\n`GET /api/v1/automations/runs`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Company",
+      "description": "Single-company profile: retrieve and update the company profile.",
+      "item": [
+        {
+          "name": "Get company profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/company",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "company"
+              ]
+            },
+            "description": "Retrieves the single company profile. Requires COMPANY:VIEW.\n\n`GET /api/v1/company`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update company profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/company",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "company"
+              ]
+            },
+            "description": "Updates the single company profile. Requires COMPANY:EDIT.\n\n`PUT /api/v1/company`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"legalName\": \"string\",\n  \"displayName\": \"string\",\n  \"registrationNumber\": \"string\",\n  \"email\": \"user@example.com\",\n  \"phone\": \"string\",\n  \"website\": \"string\",\n  \"addressLine1\": \"string\",\n  \"addressLine2\": \"string\",\n  \"city\": \"string\",\n  \"state\": \"string\",\n  \"country\": \"string\",\n  \"postalCode\": \"string\",\n  \"timezone\": \"string\",\n  \"currency\": \"string\",\n  \"logoUrl\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Confirmation & Probation",
+      "description": "Employee probation tracking and confirmation, extension, or termination, authorized under EMPLOYEE permissions.",
+      "item": [
+        {
+          "name": "List probations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation?employeeId=&status=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns paginated probation records filtered by employee and status. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/probation`"
+          },
+          "response": []
+        },
+        {
+          "name": "Start probation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation"
+              ]
+            },
+            "description": "Starts a probation period for an employee. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/probation`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"startDate\": \"2026-01-01\",\n  \"endDate\": \"2026-01-01\",\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Terminate probation",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation/:id/terminate?remarks=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation",
+                ":id",
+                "terminate"
+              ],
+              "query": [
+                {
+                  "key": "remarks",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Terminates an employee during probation with optional remarks. Requires EMPLOYEE:APPROVE.\n\n`POST /api/v1/probation/{id}/terminate`"
+          },
+          "response": []
+        },
+        {
+          "name": "Extend probation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation/:id/extend",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation",
+                ":id",
+                "extend"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Extends an employee's probation period. Requires EMPLOYEE:APPROVE.\n\n`POST /api/v1/probation/{id}/extend`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newEndDate\": \"2026-01-01\",\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation/:id/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation",
+                ":id",
+                "confirm"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Confirms an employee at the end of probation with optional details. Requires EMPLOYEE:APPROVE.\n\n`POST /api/v1/probation/{id}/confirm`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmationDate\": \"2026-01-01\",\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get probation by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single probation record by its identifier. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/probation/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List upcoming probation ends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/probation/upcoming?withinDays=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "probation",
+                "upcoming"
+              ],
+              "query": [
+                {
+                  "key": "withinDays",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns probations ending within the given number of days (default 30). Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/probation/upcoming`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "description": "Aggregated HR analytics and per-employee self-service dashboard summaries.",
+      "item": [
+        {
+          "name": "Get my dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "me"
+              ]
+            },
+            "description": "Returns the authenticated user's own self-service dashboard summary. Requires DASHBOARD:VIEW.\n\n`GET /api/v1/dashboard/me`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get HR dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/hr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "hr"
+              ]
+            },
+            "description": "Returns company-wide aggregated HR dashboard widgets. Requires DASHBOARD:VIEW.\n\n`GET /api/v1/dashboard/hr`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "description": "Department master records: create, list, retrieve, update, and delete departments.",
+      "item": [
+        {
+          "name": "Get department by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/departments/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves a single department by its identifier. Requires DEPARTMENT:VIEW.\n\n`GET /api/v1/departments/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/departments/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing department master record. Requires DEPARTMENT:EDIT.\n\n`PUT /api/v1/departments/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete department",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/departments/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a department master record. Requires DEPARTMENT:DELETE.\n\n`DELETE /api/v1/departments/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List departments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/departments?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of departments. Requires DEPARTMENT:VIEW.\n\n`GET /api/v1/departments`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/departments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments"
+              ]
+            },
+            "description": "Creates a new department master record. Requires DEPARTMENT:CREATE.\n\n`POST /api/v1/departments`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Designations",
+      "description": "Designation master records: create, list, retrieve, update, and delete designations.",
+      "item": [
+        {
+          "name": "Get designation by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/designations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves a single designation by its identifier. Requires DESIGNATION:VIEW.\n\n`GET /api/v1/designations/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update designation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/designations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing designation master record. Requires DESIGNATION:EDIT.\n\n`PUT /api/v1/designations/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete designation",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/designations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a designation master record. Requires DESIGNATION:DELETE.\n\n`DELETE /api/v1/designations/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List designations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/designations?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of designations. Requires DESIGNATION:VIEW.\n\n`GET /api/v1/designations`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create designation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/designations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations"
+              ]
+            },
+            "description": "Creates a new designation master record. Requires DESIGNATION:CREATE.\n\n`POST /api/v1/designations`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "description": "Upload, list, preview, download, and delete employee and company documents.",
+      "item": [
+        {
+          "name": "List documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents?employeeId=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of documents, optionally filtered by employee. Requires DOCUMENT:VIEW.\n\n`GET /api/v1/documents`"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents?documentType=&employeeId=&title=&folder=&description=&expiryDate=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents"
+              ],
+              "query": [
+                {
+                  "key": "documentType",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "folder",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "expiryDate",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Uploads a document file via multipart form data along with its metadata. Requires DOCUMENT:CREATE.\n\n`POST /api/v1/documents`",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get document metadata",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns the metadata for a single document by its identifier. Requires DOCUMENT:VIEW.\n\n`GET /api/v1/documents/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete document",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a document by its identifier. Requires DOCUMENT:DELETE.\n\n`DELETE /api/v1/documents/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Preview document",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/:id/preview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents",
+                ":id",
+                "preview"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Streams the document binary content inline for in-browser preview. Requires DOCUMENT:VIEW.\n\n`GET /api/v1/documents/{id}/preview`"
+          },
+          "response": []
+        },
+        {
+          "name": "Download document",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/:id/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documents",
+                ":id",
+                "download"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Streams the document binary content as an attachment for download. Requires DOCUMENT:VIEW.\n\n`GET /api/v1/documents/{id}/download`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Email Templates",
+      "description": "Manage reusable email templates and render or send them.",
+      "item": [
+        {
+          "name": "Get email template by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single email template by its identifier. Requires EMAIL:VIEW.\n\n`GET /api/v1/email-templates/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update email template",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing email template. Requires EMAIL:EDIT.\n\n`PUT /api/v1/email-templates/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"category\": \"ACCOUNT\",\n  \"subject\": \"string\",\n  \"bodyHtml\": \"string\",\n  \"active\": true,\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete email template",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes an email template. Requires EMAIL:DELETE.\n\n`DELETE /api/v1/email-templates/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List email templates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates?category=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns all email templates, optionally filtered by category. Requires EMAIL:VIEW.\n\n`GET /api/v1/email-templates`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create email template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates"
+              ]
+            },
+            "description": "Creates a new email template. Requires EMAIL:CREATE.\n\n`POST /api/v1/email-templates`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"category\": \"ACCOUNT\",\n  \"subject\": \"string\",\n  \"bodyHtml\": \"string\",\n  \"active\": true,\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send templated email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates/:id/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates",
+                ":id",
+                "send"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Renders the template and sends it to the given recipient. Requires EMAIL:CREATE.\n\n`POST /api/v1/email-templates/{id}/send`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"user@example.com\",\n  \"variables\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Preview email template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/email-templates/:id/preview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "email-templates",
+                ":id",
+                "preview"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Renders the template with the supplied variables without sending. Requires EMAIL:VIEW.\n\n`POST /api/v1/email-templates/{id}/preview`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variables\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employee Lifecycle",
+      "description": "Onboarding and offboarding lifecycle cases and their task checklists, authorized under EMPLOYEE permissions.",
+      "item": [
+        {
+          "name": "List lifecycle cases",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle?employeeId=&type=&status=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns paginated lifecycle cases filtered by employee, type, and status. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/lifecycle`"
+          },
+          "response": []
+        },
+        {
+          "name": "Initiate lifecycle case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle"
+              ]
+            },
+            "description": "Starts a new onboarding or offboarding lifecycle case for an employee. Requires EMPLOYEE:CREATE.\n\n`POST /api/v1/lifecycle`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"ONBOARDING\",\n  \"employeeId\": 1,\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add lifecycle task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle/:id/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle",
+                ":id",
+                "tasks"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Adds a task to an existing lifecycle case. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/lifecycle/{id}/tasks`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"string\",\n  \"notes\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete lifecycle task",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle/:id/tasks/:taskId/complete?notes=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle",
+                ":id",
+                "tasks",
+                ":taskId",
+                "complete"
+              ],
+              "query": [
+                {
+                  "key": "notes",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                },
+                {
+                  "key": "taskId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Marks a lifecycle case task as completed with optional notes. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/lifecycle/{id}/tasks/{taskId}/complete`"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel lifecycle case",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Cancels an in-progress lifecycle case. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/lifecycle/{id}/cancel`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get lifecycle case by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/lifecycle/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "lifecycle",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single lifecycle case with its tasks by identifier. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/lifecycle/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employee Profile",
+      "description": "Employee profile sub-resources: emergency contacts, family, education, experience, and timeline.",
+      "item": [
+        {
+          "name": "Update family member",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/family/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "family",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing family member of the employee. Requires EMPLOYEE:EDIT.\n\n`PUT /api/v1/employees/{employeeId}/family/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"relationship\": \"string\",\n  \"dateOfBirth\": \"2026-01-01\",\n  \"occupation\": \"string\",\n  \"phone\": \"string\",\n  \"dependent\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete family member",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/family/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "family",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes a family member from the employee profile. Requires EMPLOYEE:EDIT.\n\n`DELETE /api/v1/employees/{employeeId}/family/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update experience record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/experience/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "experience",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing work experience record of the employee. Requires EMPLOYEE:EDIT.\n\n`PUT /api/v1/employees/{employeeId}/experience/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"string\",\n  \"designation\": \"string\",\n  \"fromDate\": \"2026-01-01\",\n  \"toDate\": \"2026-01-01\",\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete experience record",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/experience/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "experience",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes a work experience record from the employee profile. Requires EMPLOYEE:EDIT.\n\n`DELETE /api/v1/employees/{employeeId}/experience/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update emergency contact",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/emergency-contacts/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "emergency-contacts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing emergency contact of the employee. Requires EMPLOYEE:EDIT.\n\n`PUT /api/v1/employees/{employeeId}/emergency-contacts/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"relationship\": \"string\",\n  \"phone\": \"string\",\n  \"alternatePhone\": \"string\",\n  \"email\": \"string\",\n  \"address\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete emergency contact",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/emergency-contacts/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "emergency-contacts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes an emergency contact from the employee profile. Requires EMPLOYEE:EDIT.\n\n`DELETE /api/v1/employees/{employeeId}/emergency-contacts/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update education record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/education/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "education",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing education record of the employee. Requires EMPLOYEE:EDIT.\n\n`PUT /api/v1/employees/{employeeId}/education/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"string\",\n  \"degree\": \"string\",\n  \"fieldOfStudy\": \"string\",\n  \"startYear\": 1,\n  \"endYear\": 1,\n  \"grade\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete education record",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/education/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "education",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes an education record from the employee profile. Requires EMPLOYEE:EDIT.\n\n`DELETE /api/v1/employees/{employeeId}/education/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List timeline events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/timeline",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "timeline"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lists all events in the employee's append-only timeline. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{employeeId}/timeline`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add timeline event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/timeline",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "timeline"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Appends an event to the employee's append-only timeline. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/employees/{employeeId}/timeline`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventType\": \"JOINED\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"eventDate\": \"2026-01-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List family members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/family",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "family"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lists all family members for the employee. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{employeeId}/family`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add family member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/family",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "family"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Adds a family member to the employee profile. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/employees/{employeeId}/family`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"relationship\": \"string\",\n  \"dateOfBirth\": \"2026-01-01\",\n  \"occupation\": \"string\",\n  \"phone\": \"string\",\n  \"dependent\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List experience records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/experience",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "experience"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lists all prior work experience records for the employee. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{employeeId}/experience`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add experience record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/experience",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "experience"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Adds a prior work experience record to the employee profile. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/employees/{employeeId}/experience`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"string\",\n  \"designation\": \"string\",\n  \"fromDate\": \"2026-01-01\",\n  \"toDate\": \"2026-01-01\",\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List emergency contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/emergency-contacts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "emergency-contacts"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lists all emergency contacts for the employee. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{employeeId}/emergency-contacts`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add emergency contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/emergency-contacts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "emergency-contacts"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Adds an emergency contact to the employee profile. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/employees/{employeeId}/emergency-contacts`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"relationship\": \"string\",\n  \"phone\": \"string\",\n  \"alternatePhone\": \"string\",\n  \"email\": \"string\",\n  \"address\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List education records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/education",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "education"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lists all education records for the employee. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{employeeId}/education`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add education record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/education",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "education"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Adds an education record to the employee profile. Requires EMPLOYEE:EDIT.\n\n`POST /api/v1/employees/{employeeId}/education`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"string\",\n  \"degree\": \"string\",\n  \"fieldOfStudy\": \"string\",\n  \"startYear\": 1,\n  \"endYear\": 1,\n  \"grade\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete timeline event",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:employeeId/timeline/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":employeeId",
+                "timeline",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "employeeId",
+                  "value": "1"
+                },
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes an event from the employee's timeline. Requires EMPLOYEE:EDIT.\n\n`DELETE /api/v1/employees/{employeeId}/timeline/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "description": "Employee master records: create, list, retrieve, update, and delete employees.",
+      "item": [
+        {
+          "name": "Get employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves a single employee by its identifier. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing employee master record. Requires EMPLOYEE:EDIT.\n\n`PUT /api/v1/employees/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeCode\": \"string\",\n  \"fullName\": \"string\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2026-01-01\",\n  \"bloodGroup\": \"string\",\n  \"nationality\": \"string\",\n  \"maritalStatus\": \"SINGLE\",\n  \"photoUrl\": \"string\",\n  \"contact\": {\n    \"mobile\": \"string\",\n    \"personalEmail\": \"string\",\n    \"officialEmail\": \"string\",\n    \"currentAddress\": \"string\",\n    \"permanentAddress\": \"string\"\n  },\n  \"employment\": {\n    \"departmentId\": 1,\n    \"designationId\": 1,\n    \"employmentTypeId\": 1,\n    \"joiningDate\": \"2026-01-01\",\n    \"endDate\": \"2026-01-01\",\n    \"noticePeriodDays\": 1,\n    \"employmentStatus\": \"ACTIVE\"\n  },\n  \"salary\": {\n    \"basicSalary\": 1.0,\n    \"hra\": 1.0,\n    \"specialAllowance\": 1.0,\n    \"bonus\": 1.0,\n    \"incentives\": 1.0,\n    \"otherAllowances\": 1.0\n  },\n  \"bank\": {\n    \"bankName\": \"string\",\n    \"accountNumber\": \"string\",\n    \"ifscCode\": \"string\",\n    \"accountHolderName\": \"string\"\n  },\n  \"governmentIds\": {\n    \"pan\": \"string\",\n    \"aadhaar\": \"string\",\n    \"passport\": \"string\",\n    \"drivingLicense\": \"string\"\n  },\n  \"social\": {\n    \"linkedinUrl\": \"string\",\n    \"instagramUrl\": \"string\",\n    \"facebookUrl\": \"string\",\n    \"xUrl\": \"string\"\n  },\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete employee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes an employee master record. Requires EMPLOYEE:DELETE.\n\n`DELETE /api/v1/employees/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of employees. Requires EMPLOYEE:VIEW.\n\n`GET /api/v1/employees`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees"
+              ]
+            },
+            "description": "Creates a new employee master record. Requires EMPLOYEE:CREATE.\n\n`POST /api/v1/employees`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeCode\": \"string\",\n  \"fullName\": \"string\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2026-01-01\",\n  \"bloodGroup\": \"string\",\n  \"nationality\": \"string\",\n  \"maritalStatus\": \"SINGLE\",\n  \"photoUrl\": \"string\",\n  \"contact\": {\n    \"mobile\": \"string\",\n    \"personalEmail\": \"string\",\n    \"officialEmail\": \"string\",\n    \"currentAddress\": \"string\",\n    \"permanentAddress\": \"string\"\n  },\n  \"employment\": {\n    \"departmentId\": 1,\n    \"designationId\": 1,\n    \"employmentTypeId\": 1,\n    \"joiningDate\": \"2026-01-01\",\n    \"endDate\": \"2026-01-01\",\n    \"noticePeriodDays\": 1,\n    \"employmentStatus\": \"ACTIVE\"\n  },\n  \"salary\": {\n    \"basicSalary\": 1.0,\n    \"hra\": 1.0,\n    \"specialAllowance\": 1.0,\n    \"bonus\": 1.0,\n    \"incentives\": 1.0,\n    \"otherAllowances\": 1.0\n  },\n  \"bank\": {\n    \"bankName\": \"string\",\n    \"accountNumber\": \"string\",\n    \"ifscCode\": \"string\",\n    \"accountHolderName\": \"string\"\n  },\n  \"governmentIds\": {\n    \"pan\": \"string\",\n    \"aadhaar\": \"string\",\n    \"passport\": \"string\",\n    \"drivingLicense\": \"string\"\n  },\n  \"social\": {\n    \"linkedinUrl\": \"string\",\n    \"instagramUrl\": \"string\",\n    \"facebookUrl\": \"string\",\n    \"xUrl\": \"string\"\n  },\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employment Types",
+      "description": "Employment type configuration: create, list, retrieve, update, and delete employment types.",
+      "item": [
+        {
+          "name": "Get employment type by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employment-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employment-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves a single employment type by its identifier. Requires SETTINGS:VIEW.\n\n`GET /api/v1/employment-types/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update employment type",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employment-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employment-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing employment type configuration. Requires SETTINGS:ADMIN.\n\n`PUT /api/v1/employment-types/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete employment type",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employment-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employment-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes an employment type configuration. Requires SETTINGS:ADMIN.\n\n`DELETE /api/v1/employment-types/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List employment types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employment-types?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employment-types"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of employment types. Requires SETTINGS:VIEW.\n\n`GET /api/v1/employment-types`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create employment type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employment-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employment-types"
+              ]
+            },
+            "description": "Creates a new employment type configuration. Requires SETTINGS:ADMIN.\n\n`POST /api/v1/employment-types`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Global Search",
+      "description": "Unified, permission-filtered search across HRMS entity types.",
+      "item": [
+        {
+          "name": "Global search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/search?q=&limit=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Runs a single query across entity types the caller can view and returns typed results. Requires an authenticated user.\n\n`GET /api/v1/search`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Holidays",
+      "description": "Holiday calendar management, authorized by the HOLIDAY RBAC permissions.",
+      "item": [
+        {
+          "name": "Get holiday by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single holiday by its identifier. Requires HOLIDAY:VIEW.\n\n`GET /api/v1/holidays/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update holiday",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing holiday by id. Requires HOLIDAY:EDIT.\n\n`PUT /api/v1/holidays/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"holidayDate\": \"2026-01-01\",\n  \"name\": \"string\",\n  \"type\": \"NATIONAL\",\n  \"region\": \"string\",\n  \"description\": \"string\",\n  \"recurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete holiday",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes a holiday from the calendar by id. Requires HOLIDAY:DELETE.\n\n`DELETE /api/v1/holidays/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get holiday calendar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays?year=&from=&to=&type=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays"
+              ],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns holidays filtered by year, date range, and/or holiday type. Requires HOLIDAY:VIEW.\n\n`GET /api/v1/holidays`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create holiday",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays"
+              ]
+            },
+            "description": "Adds a new holiday to the calendar. Requires HOLIDAY:CREATE.\n\n`POST /api/v1/holidays`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"holidayDate\": \"2026-01-01\",\n  \"name\": \"string\",\n  \"type\": \"NATIONAL\",\n  \"region\": \"string\",\n  \"description\": \"string\",\n  \"recurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leave",
+      "description": "Leave balances and the apply/approve/reject/cancel request workflow, plus allocation and calendar views.",
+      "item": [
+        {
+          "name": "List leave requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests?employeeId=&status=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns paginated leave requests filtered by employee and status. Requires LEAVE:VIEW.\n\n`GET /api/v1/leave/requests`"
+          },
+          "response": []
+        },
+        {
+          "name": "Apply for leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests"
+              ]
+            },
+            "description": "Submits a new leave request for the authenticated employee, starting the approval workflow. Requires LEAVE:CREATE.\n\n`POST /api/v1/leave/requests`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaveTypeId\": 1,\n  \"fromDate\": \"2026-01-01\",\n  \"toDate\": \"2026-01-01\",\n  \"halfDay\": true,\n  \"reason\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject leave request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests/:id/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests",
+                ":id",
+                "reject"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Rejects a leave request with optional remarks. Requires LEAVE:APPROVE.\n\n`POST /api/v1/leave/requests/{id}/reject`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel leave request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Cancels the authenticated employee's own leave request. Requires LEAVE:CREATE.\n\n`POST /api/v1/leave/requests/{id}/cancel`"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve leave request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests/:id/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests",
+                ":id",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Approves a leave request with optional remarks, advancing the approval workflow. Requires LEAVE:APPROVE.\n\n`POST /api/v1/leave/requests/{id}/approve`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Allocate leave balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/allocate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "allocate"
+              ]
+            },
+            "description": "Allocates or adjusts a leave balance for an employee. Requires LEAVE:EDIT.\n\n`POST /api/v1/leave/allocate`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"leaveTypeId\": 1,\n  \"year\": 1,\n  \"allocated\": 1.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get my leave requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/requests/me?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "requests",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of the authenticated employee's leave requests. Requires LEAVE:VIEW.\n\n`GET /api/v1/leave/requests/me`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get leave calendar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/calendar?from=&to=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "calendar"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns leave requests overlapping the given date range for a calendar view. Requires LEAVE:VIEW.\n\n`GET /api/v1/leave/calendar`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get leave balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/balances?employeeId=&year=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave",
+                "balances"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "year",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns all leave-type balances for an employee for the given year. Requires LEAVE:VIEW.\n\n`GET /api/v1/leave/balances`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leave Types",
+      "description": "Configuration of leave types; reads require LEAVE:VIEW and changes require LEAVE:ADMIN.",
+      "item": [
+        {
+          "name": "Update leave type",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing leave type configuration by id. Requires LEAVE:ADMIN.\n\n`PUT /api/v1/leave-types/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"defaultAnnualQuota\": 1,\n  \"paid\": true,\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete leave type",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave-types/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave-types",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a leave type configuration by id. Requires LEAVE:ADMIN.\n\n`DELETE /api/v1/leave-types/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List leave types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave-types"
+              ]
+            },
+            "description": "Returns all configured leave types. Requires LEAVE:VIEW.\n\n`GET /api/v1/leave-types`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create leave type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave-types"
+              ]
+            },
+            "description": "Creates a new leave type configuration. Requires LEAVE:ADMIN.\n\n`POST /api/v1/leave-types`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"defaultAnnualQuota\": 1,\n  \"paid\": true,\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "description": "Office location configuration: create, list, retrieve, update, and delete locations.",
+      "item": [
+        {
+          "name": "Get location by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "locations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves a single office location by its identifier. Requires SETTINGS:VIEW.\n\n`GET /api/v1/locations/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "locations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing office location. Requires SETTINGS:ADMIN.\n\n`PUT /api/v1/locations/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"addressLine1\": \"string\",\n  \"addressLine2\": \"string\",\n  \"city\": \"string\",\n  \"state\": \"string\",\n  \"country\": \"string\",\n  \"postalCode\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete location",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "locations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes an office location. Requires SETTINGS:ADMIN.\n\n`DELETE /api/v1/locations/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List locations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "locations"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of office locations. Requires SETTINGS:VIEW.\n\n`GET /api/v1/locations`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "locations"
+              ]
+            },
+            "description": "Creates a new office location. Requires SETTINGS:ADMIN.\n\n`POST /api/v1/locations`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"addressLine1\": \"string\",\n  \"addressLine2\": \"string\",\n  \"city\": \"string\",\n  \"state\": \"string\",\n  \"country\": \"string\",\n  \"postalCode\": \"string\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "description": "In-app notification center: read, dismiss, send, and retry notifications.",
+      "item": [
+        {
+          "name": "Retry notification delivery",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/:id/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                ":id",
+                "retry"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Re-attempts delivery of a previously failed notification. Requires NOTIFICATION:ADMIN.\n\n`POST /api/v1/notifications/{id}/retry`"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark notification read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/:id/read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                ":id",
+                "read"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Marks one of the caller's notifications as read. Requires NOTIFICATION:EDIT.\n\n`POST /api/v1/notifications/{id}/read`"
+          },
+          "response": []
+        },
+        {
+          "name": "Send notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "send"
+              ]
+            },
+            "description": "Sends a notification to a target recipient (system/admin use). Requires NOTIFICATION:CREATE.\n\n`POST /api/v1/notifications/send`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"title\": \"string\",\n  \"message\": \"string\",\n  \"channel\": \"IN_APP\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark all read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/read-all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "read-all"
+              ]
+            },
+            "description": "Marks all of the caller's unread notifications as read. Requires NOTIFICATION:EDIT.\n\n`POST /api/v1/notifications/read-all`"
+          },
+          "response": []
+        },
+        {
+          "name": "List my notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications?unread=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications"
+              ],
+              "query": [
+                {
+                  "key": "unread",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns the caller's own notifications, optionally filtered to unread only. Requires NOTIFICATION:VIEW.\n\n`GET /api/v1/notifications`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get unread count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "unread-count"
+              ]
+            },
+            "description": "Returns the number of unread notifications for the caller. Requires NOTIFICATION:VIEW.\n\n`GET /api/v1/notifications/unread-count`"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete notification",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes one of the caller's own notifications. Requires NOTIFICATION:DELETE.\n\n`DELETE /api/v1/notifications/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reimbursements",
+      "description": "Submit, review, approve, reject, pay, and cancel employee expense reimbursement claims.",
+      "item": [
+        {
+          "name": "List reimbursement claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements?employeeId=&status=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of claims, optionally filtered by employee and status. Requires EXPENSE:VIEW.\n\n`GET /api/v1/reimbursements`"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit reimbursement claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements"
+              ]
+            },
+            "description": "Submits a new expense reimbursement claim for the authenticated user. Requires EXPENSE:CREATE.\n\n`POST /api/v1/reimbursements`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"TRAVEL\",\n  \"amount\": 1.0,\n  \"expenseDate\": \"2026-01-01\",\n  \"description\": \"string\",\n  \"billDocumentId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements/:id/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements",
+                ":id",
+                "reject"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Rejects a reimbursement claim with optional remarks. Requires EXPENSE:APPROVE.\n\n`POST /api/v1/reimbursements/{id}/reject`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark claim paid",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements/:id/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements",
+                ":id",
+                "pay"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Marks an approved reimbursement claim as paid. Requires EXPENSE:APPROVE.\n\n`POST /api/v1/reimbursements/{id}/pay`"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel claim",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Cancels the authenticated user's own pending reimbursement claim. Requires EXPENSE:CREATE.\n\n`POST /api/v1/reimbursements/{id}/cancel`"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements/:id/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements",
+                ":id",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Approves a reimbursement claim with optional remarks. Requires EXPENSE:APPROVE.\n\n`POST /api/v1/reimbursements/{id}/approve`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List my claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reimbursements/me?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reimbursements",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of the authenticated user's own reimbursement claims. Requires EXPENSE:VIEW.\n\n`GET /api/v1/reimbursements/me`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "description": "Generate and export operational reports in CSV, Excel, or PDF format.",
+      "item": [
+        {
+          "name": "Export report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/:type?format=&from=&to=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                ":type"
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "type",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Generates the requested report type over an optional date range and streams it in the chosen format (CSV, Excel, or PDF). Requires REPORT:EXPORT.\n\n`GET /api/v1/reports/{type}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Salary & Compensation",
+      "description": "Manage employee salary structure revisions and generate, list, and download payslips.",
+      "item": [
+        {
+          "name": "List salary structure history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/structures?employeeId=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "structures"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns the full salary structure revision history for an employee. Requires PAYROLL:VIEW.\n\n`GET /api/v1/salary/structures`"
+          },
+          "response": []
+        },
+        {
+          "name": "Add salary revision",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/structures",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "structures"
+              ]
+            },
+            "description": "Creates a new salary structure revision for an employee. Requires PAYROLL:CREATE.\n\n`POST /api/v1/salary/structures`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"effectiveFrom\": \"2026-01-01\",\n  \"basic\": 1.0,\n  \"hra\": 1.0,\n  \"specialAllowance\": 1.0,\n  \"bonus\": 1.0,\n  \"incentives\": 1.0,\n  \"otherAllowances\": 1.0,\n  \"remarks\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List payslips",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/payslips?employeeId=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "payslips"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of payslips for an employee. Requires PAYROLL:VIEW.\n\n`GET /api/v1/salary/payslips`"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate payslip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/payslips",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "payslips"
+              ]
+            },
+            "description": "Generates a payslip for an employee for the requested pay period. Requires PAYROLL:CREATE.\n\n`POST /api/v1/salary/payslips`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"year\": 1,\n  \"month\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get current salary structure",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/structures/current?employeeId=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "structures",
+                "current"
+              ],
+              "query": [
+                {
+                  "key": "employeeId",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns the currently effective salary structure for an employee. Requires PAYROLL:VIEW.\n\n`GET /api/v1/salary/structures/current`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get payslip by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/payslips/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "payslips",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single payslip by its identifier. Requires PAYROLL:VIEW.\n\n`GET /api/v1/salary/payslips/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Download payslip PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/salary/payslips/:id/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "salary",
+                "payslips",
+                ":id",
+                "download"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Streams the payslip as a downloadable PDF attachment. Requires PAYROLL:VIEW.\n\n`GET /api/v1/salary/payslips/{id}/download`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System Administration",
+      "description": "Read-only administrative console: system info, role catalogue, and login history.",
+      "item": [
+        {
+          "name": "Get system information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/system-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "system-info"
+              ]
+            },
+            "description": "Returns runtime and deployment system information for the platform. Requires the SETTINGS:ADMIN permission.\n\n`GET /api/v1/admin/system-info`"
+          },
+          "response": []
+        },
+        {
+          "name": "List roles and permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "roles"
+              ]
+            },
+            "description": "Returns the catalogue of roles with their associated permissions. Requires the AUTHZ:VIEW permission.\n\n`GET /api/v1/admin/roles`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get login history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login-history?email=&pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login-history"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated login-history log, optionally filtered by email. Requires the AUDIT:VIEW permission.\n\n`GET /api/v1/admin/login-history`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System Settings",
+      "description": "Key/value configuration store for platform-wide settings.",
+      "item": [
+        {
+          "name": "Get a setting",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settings/:key",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "settings",
+                ":key"
+              ],
+              "variable": [
+                {
+                  "key": "key",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single system setting by its key. Requires the SETTINGS:VIEW permission.\n\n`GET /api/v1/settings/{key}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update a setting value",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settings/:key",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "settings",
+                ":key"
+              ],
+              "variable": [
+                {
+                  "key": "key",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates the value of an existing setting; non-editable settings are rejected. Requires the SETTINGS:ADMIN permission.\n\n`PUT /api/v1/settings/{key}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a setting",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settings/:key",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "settings",
+                ":key"
+              ],
+              "variable": [
+                {
+                  "key": "key",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Removes a system setting by its key; non-editable settings cannot be removed. Requires the SETTINGS:ADMIN permission.\n\n`DELETE /api/v1/settings/{key}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settings?category=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "settings"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns all system settings, optionally filtered by category. Requires the SETTINGS:VIEW permission.\n\n`GET /api/v1/settings`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create a setting",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "settings"
+              ]
+            },
+            "description": "Creates a new system setting entry. Requires the SETTINGS:ADMIN permission.\n\n`POST /api/v1/settings`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"string\",\n  \"value\": \"string\",\n  \"category\": \"string\",\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "description": "Administrative management of user accounts, roles, and status.",
+      "item": [
+        {
+          "name": "Enable or disable a user",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id/status?enabled=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "enabled",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Toggles a user account's enabled status via the 'enabled' query parameter. Requires the AUTH:EDIT permission.\n\n`PUT /api/v1/users/{id}/status`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update user roles",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id",
+                "roles"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Replaces the set of roles assigned to a user; assignment rules are enforced in the service. Requires the AUTHZ:EDIT permission.\n\n`PUT /api/v1/users/{id}/roles`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\n    \"SUPER_ADMIN\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated list of user accounts. Requires the AUTH:VIEW permission.\n\n`GET /api/v1/users`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create a user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Creates a new user account. Requires the AUTH:CREATE permission.\n\n`POST /api/v1/users`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"fullName\": \"string\",\n  \"password\": \"string\",\n  \"roles\": [\n    \"SUPER_ADMIN\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get a user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single user account by its identifier. Requires the AUTH:VIEW permission.\n\n`GET /api/v1/users/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a user account by its identifier. Requires the AUTH:DELETE permission.\n\n`DELETE /api/v1/users/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "WhatsApp Messages",
+      "description": "Browse the WhatsApp message ledger and update delivery/read status.",
+      "item": [
+        {
+          "name": "Update message status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/messages/:id/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "messages",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Records a provider delivery/read status callback for a message. Requires WHATSAPP:EDIT.\n\n`PATCH /api/v1/whatsapp/messages/{id}/status`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"QUEUED\",\n  \"failureReason\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List WhatsApp messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/messages?pageable=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "pageable",
+                  "value": "",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Returns a paginated ledger of sent WhatsApp messages. Requires WHATSAPP:VIEW.\n\n`GET /api/v1/whatsapp/messages`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get WhatsApp message by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/messages/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "messages",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single WhatsApp message by its identifier. Requires WHATSAPP:VIEW.\n\n`GET /api/v1/whatsapp/messages/{id}`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "WhatsApp Templates",
+      "description": "Manage WhatsApp message templates and render or send them.",
+      "item": [
+        {
+          "name": "Get WhatsApp template by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Returns a single WhatsApp template by its identifier. Requires WHATSAPP:VIEW.\n\n`GET /api/v1/whatsapp/templates/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "Update WhatsApp template",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Updates an existing WhatsApp template. Requires WHATSAPP:EDIT.\n\n`PUT /api/v1/whatsapp/templates/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"category\": \"UTILITY\",\n  \"bodyText\": \"string\",\n  \"active\": true,\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete WhatsApp template",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Deletes a WhatsApp template. Requires WHATSAPP:DELETE.\n\n`DELETE /api/v1/whatsapp/templates/{id}`"
+          },
+          "response": []
+        },
+        {
+          "name": "List WhatsApp templates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates?category=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns all WhatsApp templates, optionally filtered by category. Requires WHATSAPP:VIEW.\n\n`GET /api/v1/whatsapp/templates`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create WhatsApp template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates"
+              ]
+            },
+            "description": "Creates a new WhatsApp message template. Requires WHATSAPP:CREATE.\n\n`POST /api/v1/whatsapp/templates`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"name\": \"string\",\n  \"category\": \"UTILITY\",\n  \"bodyText\": \"string\",\n  \"active\": true,\n  \"description\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send templated WhatsApp message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates/:id/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates",
+                ":id",
+                "send"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Renders the template and sends it as a WhatsApp message to the recipient. Requires WHATSAPP:CREATE.\n\n`POST /api/v1/whatsapp/templates/{id}/send`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"toPhone\": \"string\",\n  \"recipientUserId\": 1,\n  \"variables\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Preview WhatsApp template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/whatsapp/templates/:id/preview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "whatsapp",
+                "templates",
+                ":id",
+                "preview"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Renders the template with the supplied variables without sending. Requires WHATSAPP:VIEW.\n\n`POST /api/v1/whatsapp/templates/{id}/preview`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variables\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hrms}
+
+  jpa:
+    hibernate:
+      # Schema is owned by Flyway (db/migration). Hibernate only validates that entities match the
+      # migrated schema; it must not mutate it. Override with JPA_DDL_AUTO only for throwaway spikes.
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    # Log SQL to the console during development.
+    show-sql: true
+
+hrms:
+  security:
+    jwt:
+      # DEV ONLY convenience secret so the app starts without setting HRMS_JWT_SECRET.
+      # NEVER use this in staging/production — those must supply a real secret via the environment.
+      secret: ${HRMS_JWT_SECRET:dev-only-insecure-jwt-secret-change-me-0123456789-abcdefghij}
+    cors:
+      # Allow the local SPA dev servers (Vite default 5173, CRA/Next 3000) to call the API in dev.
+      allowed-origins: ${HRMS_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.security: debug
+    com.ogm.hrms.security: debug

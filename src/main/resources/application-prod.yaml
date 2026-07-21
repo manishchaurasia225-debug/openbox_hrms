@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    # All connection details MUST come from the environment in production.
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hrms}
+    username: ${DB_USERNAME:manishchaurasia}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+
+  jpa:
+    hibernate:
+      # Never let Hibernate mutate a production schema. 'validate' only checks
+      # that the mapped entities match the existing tables. Manage schema
+      # changes with a migration tool (Flyway/Liquibase).
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    # Do not log SQL in production.
+    show-sql: false
+
+  thymeleaf:
+    # Serve compiled templates from the JAR; disable the dev template cache bypass.
+    cache: true
+
+server:
+  # Return a minimal error page (no stack traces) to clients.
+  error:
+    include-message: never
+    include-stacktrace: never
+
+# Do not expose interactive API docs in production (override per-env if you run
+# an internal, access-controlled docs instance).
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: warn
