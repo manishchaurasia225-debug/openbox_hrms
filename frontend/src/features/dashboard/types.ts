@@ -13,6 +13,60 @@ export interface PersonDate {
   date: string
 }
 
+/** com.ogm.hrms.dto.attendance.AttendanceSummaryResponse (subset used on the dashboard). */
+export interface AttendanceMonthSummary {
+  year: number
+  month: number
+  presentDays: number
+  leaveDays: number
+  absentDays: number
+  totalDays: number
+  totalWorkingMinutes: number
+}
+
+/** com.ogm.hrms.dto.leave.LeaveBalanceResponse */
+export interface LeaveBalanceItem {
+  id: number
+  leaveTypeCode: string
+  year: number
+  allocated: number
+  used: number
+  remaining: number
+}
+
+/** com.ogm.hrms.dto.holiday.HolidayResponse (subset). */
+export interface HolidayItem {
+  id: number
+  holidayDate: string
+  name: string
+  region?: string
+}
+
+/** com.ogm.hrms.dto.communication.AnnouncementResponse (subset). */
+export interface AnnouncementItem {
+  id: number
+  title: string
+  body: string
+  publishAt?: string
+  pinned: boolean
+}
+
+/** com.ogm.hrms.dto.dashboard.EmployeeDashboardResponse */
+export interface EmployeeDashboard {
+  employeeId: number
+  employeeName: string
+  employeeCode: string
+  department?: string
+  designation?: string
+  profileCompletionPercent: number
+  attendanceThisMonth: AttendanceMonthSummary
+  leaveBalances: LeaveBalanceItem[]
+  upcomingHolidays: HolidayItem[]
+  recentAnnouncements: AnnouncementItem[]
+  unreadNotifications: number
+  payslipCount: number
+}
+
 /** com.ogm.hrms.dto.dashboard.HrDashboardResponse */
 export interface HrDashboard {
   totalEmployees: number

@@ -20,8 +20,10 @@ import com.ogm.hrms.repository.LeaveRequestRepository;
 import com.ogm.hrms.repository.LeaveTypeRepository;
 import com.ogm.hrms.enums.NotificationChannel;
 import com.ogm.hrms.security.AuthenticatedUser;
+import com.ogm.hrms.security.CurrentAccess;
 import com.ogm.hrms.service.LeaveService;
 import com.ogm.hrms.service.NotificationService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,14 +49,17 @@ public class LeaveServiceImpl implements LeaveService {
     private final EmployeeRepository employeeRepository;
     private final NotificationService notificationService;
 
+    private final CurrentAccess currentAccess;
+
     public LeaveServiceImpl(LeaveTypeRepository leaveTypeRepository, LeaveBalanceRepository leaveBalanceRepository,
                             LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository,
-                            NotificationService notificationService) {
+                            NotificationService notificationService, CurrentAccess currentAccess) {
         this.leaveTypeRepository = leaveTypeRepository;
         this.leaveBalanceRepository = leaveBalanceRepository;
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
+        this.currentAccess = currentAccess;
     }
 
     // --- leave types -----------------------------------------------------------------------------
@@ -174,6 +179,14 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<LeaveRequestResponse> list(Long employeeId, LeaveStatus status, Pageable pageable) {
+        // Self scope: a standard employee may only ever see their own requests, regardless of filter.
+        if (currentAccess.isEmployeeScopeOnly()) {
+            Long own = currentAccess.employeeId();
+            if (own == null) {
+                return PageResponse.of(Page.empty(pageable), this::toRequest);
+            }
+            employeeId = own;
+        }
         if (employeeId != null && status != null) {
             return PageResponse.of(leaveRequestRepository.findByEmployee_IdAndStatus(employeeId, status, pageable), this::toRequest);
         }

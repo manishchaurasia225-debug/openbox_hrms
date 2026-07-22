@@ -222,12 +222,14 @@ function AllLeaveTab({ canApprove }: { canApprove: boolean }) {
 export function LeavePage() {
   const { hasAuthority } = useAuth()
   const [applyOpen, setApplyOpen] = useState(false)
+  // Only managers/HR/admin (LEAVE:APPROVE) manage the org-wide queue; employees see just their own.
+  const canManage = hasAuthority('LEAVE:APPROVE')
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Leave"
-        description="Apply for leave and manage team requests."
+        description={canManage ? 'Apply for leave and manage team requests.' : 'Apply for and track your leave.'}
         actions={
           <Can anyOf={['LEAVE:CREATE']}>
             <Button onClick={() => setApplyOpen(true)}>
@@ -237,18 +239,22 @@ export function LeavePage() {
         }
       />
 
-      <Tabs defaultValue="my">
-        <TabsList>
-          <TabsTrigger value="my">My requests</TabsTrigger>
-          <TabsTrigger value="all">All requests</TabsTrigger>
-        </TabsList>
-        <TabsContent value="my" className="pt-2">
-          <MyLeaveTab />
-        </TabsContent>
-        <TabsContent value="all" className="pt-2">
-          <AllLeaveTab canApprove={hasAuthority('LEAVE:APPROVE')} />
-        </TabsContent>
-      </Tabs>
+      {canManage ? (
+        <Tabs defaultValue="my">
+          <TabsList>
+            <TabsTrigger value="my">My requests</TabsTrigger>
+            <TabsTrigger value="all">All requests</TabsTrigger>
+          </TabsList>
+          <TabsContent value="my" className="pt-2">
+            <MyLeaveTab />
+          </TabsContent>
+          <TabsContent value="all" className="pt-2">
+            <AllLeaveTab canApprove />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <MyLeaveTab />
+      )}
 
       <ApplyLeaveDialog open={applyOpen} onOpenChange={setApplyOpen} />
     </div>

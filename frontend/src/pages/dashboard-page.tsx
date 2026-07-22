@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { BarList } from '@/components/dashboard/bar-list'
 import { TiltCard } from '@/components/dashboard/tilt-card'
+import { EmployeeDashboard } from '@/components/dashboard/employee-dashboard'
 import { Can } from '@/components/auth/require-permission'
 import { useAuth } from '@/lib/auth/use-auth'
 import { formatDate } from '@/lib/format'
@@ -63,11 +64,32 @@ function PeopleList({ people, empty }: { people: PersonDate[]; empty: string }) 
   )
 }
 
+/** Roles whose data scope spans the organization — they get the company overview dashboard. */
+const ELEVATED_ROLES = [
+  'SUPER_ADMIN',
+  'COMPANY_ADMIN',
+  'HR_MANAGER',
+  'HR_EXECUTIVE',
+  'MANAGER',
+  'TEAM_LEAD',
+  'RECRUITER',
+  'FINANCE',
+]
+
 export function DashboardPage() {
   const { user, hasAuthority } = useAuth()
+  const roles = user?.roles ?? []
+  // A standard employee (no back-office role) sees a personal self-service homepage instead of
+  // the company-wide overview — mirroring the backend's self-scope enforcement.
+  const isEmployeeOnly = roles.includes('EMPLOYEE') && !roles.some((role) => ELEVATED_ROLES.includes(role))
+
   const firstName = user?.fullName?.split(' ')[0] ?? 'there'
-  const canSeeHr = hasAuthority('DASHBOARD:VIEW')
+  const canSeeHr = hasAuthority('DASHBOARD:VIEW') && !isEmployeeOnly
   const { data, isLoading } = useHrDashboard(canSeeHr)
+
+  if (isEmployeeOnly) {
+    return <EmployeeDashboard />
+  }
 
   return (
     <div className="space-y-6">

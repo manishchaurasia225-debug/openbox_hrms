@@ -52,6 +52,37 @@ public class CurrentAccess {
         return false;
     }
 
+    /** @return true if the caller holds ANY of the given role names (checked as {@code ROLE_<name>}). */
+    public boolean hasAnyRole(String... roles) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return false;
+        }
+        Set<String> held = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        for (String role : roles) {
+            if (held.contains("ROLE_" + role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Back-office roles whose data scope spans beyond a single person (HR/Admin/Manager/Finance/…). */
+    private static final String[] ELEVATED_ROLES = {
+            "SUPER_ADMIN", "COMPANY_ADMIN", "HR_MANAGER", "HR_EXECUTIVE",
+            "MANAGER", "TEAM_LEAD", "RECRUITER", "FINANCE"
+    };
+
+    /**
+     * @return true when the caller is a standard Employee with no broader role — meaning their data
+     * scope is "self only" (their own leave, documents, profile), per permissions-matrix.md.
+     */
+    public boolean isEmployeeScopeOnly() {
+        return hasAnyRole("EMPLOYEE") && !hasAnyRole(ELEVATED_ROLES);
+    }
+
     /**
      * @return the id of the employee record linked to the current user, or {@code null} when the
      * caller has no linked employee profile (e.g. an administrator account).

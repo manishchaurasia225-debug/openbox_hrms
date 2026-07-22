@@ -10,6 +10,7 @@ import com.ogm.hrms.exception.ApiException;
 import com.ogm.hrms.exception.ResourceNotFoundException;
 import com.ogm.hrms.repository.DocumentRepository;
 import com.ogm.hrms.repository.EmployeeRepository;
+import com.ogm.hrms.security.CurrentAccess;
 import com.ogm.hrms.service.DocumentService;
 import com.ogm.hrms.storage.StorageProperties;
 import com.ogm.hrms.storage.StorageService;
@@ -33,15 +34,29 @@ public class DocumentServiceImpl implements DocumentService {
     private final StorageService storageService;
     private final VirusScanner virusScanner;
     private final StorageProperties storageProperties;
+    private final CurrentAccess currentAccess;
 
     public DocumentServiceImpl(DocumentRepository documentRepository, EmployeeRepository employeeRepository,
                                StorageService storageService, VirusScanner virusScanner,
-                               StorageProperties storageProperties) {
+                               StorageProperties storageProperties, CurrentAccess currentAccess) {
         this.documentRepository = documentRepository;
         this.employeeRepository = employeeRepository;
         this.storageService = storageService;
         this.virusScanner = virusScanner;
         this.storageProperties = storageProperties;
+        this.currentAccess = currentAccess;
+    }
+
+    /** Deny access to another employee's document when the caller is scoped to their own. */
+    private void assertDocumentAccess(Document document) {
+        if (!currentAccess.isEmployeeScopeOnly()) {
+            return;
+        }
+        Long own = currentAccess.employeeId();
+        Long ownerId = document.getEmployee() != null ? document.getEmployee().getId() : null;
+        if (own == null || ownerId == null || !own.equals(ownerId)) {
+            throw ApiException.forbidden("You can only access your own documents");
+        }
     }
 
     @Override
@@ -92,6 +107,14 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DocumentResponse> list(Long employeeId, Pageable pageable) {
+        // Self scope: a standard employee sees only documents linked to their own record.
+        if (currentAccess.isEmployeeScopeOnly()) {
+            Long own = currentAccess.employeeId();
+            if (own == null) {
+                return PageResponse.of(org.springframework.data.domain.Page.empty(pageable), this::toResponse);
+            }
+            employeeId = own;
+        }
         var page = (employeeId != null)
                 ? documentRepository.findByEmployee_IdAndDeletedFalse(employeeId, pageable)
                 : documentRepository.findByDeletedFalse(pageable);
@@ -101,13 +124,16 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional(readOnly = true)
     public DocumentResponse get(Long id) {
-        return toResponse(load(id));
+        Document document = load(id);
+        assertDocumentAccess(document);
+        return toResponse(document);
     }
 
     @Override
     @Transactional(readOnly = true)
     public DocumentDownload download(Long id) {
         Document document = load(id);
+        assertDocumentAccess(document);
         return new DocumentDownload(storageService.load(document.getStorageKey()),
                 document.getOriginalFilename(), document.getContentType());
     }
